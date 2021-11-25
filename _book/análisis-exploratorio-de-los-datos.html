@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Análisis Exploratorio de los datos | Proyecto DataViz</title>
+  <meta name="description" content="Ese libro contiene el detalle del proyecto enfocado a sistemas de información geográfica." />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Análisis Exploratorio de los datos | Proyecto DataViz" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Ese libro contiene el detalle del proyecto enfocado a sistemas de información geográfica." />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Análisis Exploratorio de los datos | Proyecto DataViz" />
+  
+  <meta name="twitter:description" content="Ese libro contiene el detalle del proyecto enfocado a sistemas de información geográfica." />
+  
+
+<meta name="author" content="Jorge Arteaga y Adriana Palacio" />
+
+
+<meta name="date" content="2021-11-24" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="cargue-y-limpieza-de-datos.html"/>
+
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Proyecto DataViz</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Sobre este libro</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#paquetes-necesarios"><i class="fa fa-check"></i><b>1.1</b> Paquetes Necesarios</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="cargue-y-limpieza-de-datos.html"><a href="cargue-y-limpieza-de-datos.html"><i class="fa fa-check"></i><b>2</b> Cargue y Limpieza de Datos</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="cargue-y-limpieza-de-datos.html"><a href="cargue-y-limpieza-de-datos.html#carga-de-datos"><i class="fa fa-check"></i><b>2.1</b> Carga de datos</a></li>
+<li class="chapter" data-level="2.2" data-path="cargue-y-limpieza-de-datos.html"><a href="cargue-y-limpieza-de-datos.html#revisión-de-datos-faltantes"><i class="fa fa-check"></i><b>2.2</b> Revisión de datos faltantes</a></li>
+<li class="chapter" data-level="2.3" data-path="cargue-y-limpieza-de-datos.html"><a href="cargue-y-limpieza-de-datos.html#creación-en-base-de-datos"><i class="fa fa-check"></i><b>2.3</b> Creación en base de datos</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html"><i class="fa fa-check"></i><b>3</b> Análisis Exploratorio de los datos</a>
+<ul>
+<li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#resumen-de-los-datos"><i class="fa fa-check"></i>Resumen de los datos</a></li>
+<li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#datos-atípicos"><i class="fa fa-check"></i>Datos Atípicos</a></li>
+<li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#análisis-del-anfitrion"><i class="fa fa-check"></i>Análisis del anfitrion</a></li>
+<li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#análisis-de-los-precios"><i class="fa fa-check"></i>Análisis de los precios</a></li>
+<li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#visualziación-en-mapas"><i class="fa fa-check"></i>Visualziación en mapas</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Proyecto DataViz</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="análisis-exploratorio-de-los-datos" class="section level1" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Análisis Exploratorio de los datos</h1>
+<p>En este capítulo abordaremos el análisis exploratorio de los dato <em>EDA</em> para el listado de Airbnb de la ciudad de Nueva York en el año 2019.</p>
+<div id="resumen-de-los-datos" class="section level2 unnumbered">
+<h2>Resumen de los datos</h2>
+<p>Empezamos el análisis exploratorio de nuestros datos con las estadísticas de resumen, haciendo uso de la función <code>summary</code> para los datos contenidos en la tabla <code>airbnb</code> de nuestra base de datos en <code>Heroku</code></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="análisis-exploratorio-de-los-datos.html#cb20-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RPostgres<span class="sc">::</span><span class="fu">Postgres</span>(), </span>
+<span id="cb20-2"><a href="análisis-exploratorio-de-los-datos.html#cb20-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">dbname =</span> <span class="st">&quot;d41lsl8qgestjf&quot;</span>, </span>
+<span id="cb20-3"><a href="análisis-exploratorio-de-los-datos.html#cb20-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">host =</span> <span class="st">&quot;ec2-3-229-43-149.compute-1.amazonaws.com&quot;</span>, </span>
+<span id="cb20-4"><a href="análisis-exploratorio-de-los-datos.html#cb20-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">port =</span> <span class="dv">5432</span>, </span>
+<span id="cb20-5"><a href="análisis-exploratorio-de-los-datos.html#cb20-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">user =</span> <span class="st">&quot;uqtxfaqjjcxggw&quot;</span>, </span>
+<span id="cb20-6"><a href="análisis-exploratorio-de-los-datos.html#cb20-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">password =</span> <span class="st">&quot;916d311356954de6a99118d13578bb9d1b47bdc86cb8360a60b9606293bd882d&quot;</span>)</span>
+<span id="cb20-7"><a href="análisis-exploratorio-de-los-datos.html#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="análisis-exploratorio-de-los-datos.html#cb20-8" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">dbGetQuery</span>(con, <span class="st">&quot;SELECT * FROM airbnb&quot;</span>)</span>
+<span id="cb20-9"><a href="análisis-exploratorio-de-los-datos.html#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df)</span></code></pre></div>
+<pre><code>##        id              host_id          neighbourhood_group neighbourhood     
+##  Min.   :    2539   Min.   :     2438   Length:48895        Length:48895      
+##  1st Qu.: 9471945   1st Qu.:  7822033   Class :character    Class :character  
+##  Median :19677284   Median : 30793816   Mode  :character    Mode  :character  
+##  Mean   :19017143   Mean   : 67620011                                         
+##  3rd Qu.:29152178   3rd Qu.:107434423                                         
+##  Max.   :36487245   Max.   :274321313                                         
+##     latitude       longitude       room_type             price        
+##  Min.   :40.50   Min.   :-74.24   Length:48895       Min.   :    0.0  
+##  1st Qu.:40.69   1st Qu.:-73.98   Class :character   1st Qu.:   69.0  
+##  Median :40.72   Median :-73.96   Mode  :character   Median :  106.0  
+##  Mean   :40.73   Mean   :-73.95                      Mean   :  152.7  
+##  3rd Qu.:40.76   3rd Qu.:-73.94                      3rd Qu.:  175.0  
+##  Max.   :40.91   Max.   :-73.71                      Max.   :10000.0  
+##  minimum_nights    number_of_reviews reviews_per_month
+##  Min.   :   1.00   Min.   :  0.00    Min.   : 0.000   
+##  1st Qu.:   1.00   1st Qu.:  1.00    1st Qu.: 0.040   
+##  Median :   3.00   Median :  5.00    Median : 0.370   
+##  Mean   :   7.03   Mean   : 23.27    Mean   : 1.091   
+##  3rd Qu.:   5.00   3rd Qu.: 24.00    3rd Qu.: 1.580   
+##  Max.   :1250.00   Max.   :629.00    Max.   :58.500   
+##  calculated_host_listings_count availability_365
+##  Min.   :  1.000                Min.   :  0.0   
+##  1st Qu.:  1.000                1st Qu.:  0.0   
+##  Median :  1.000                Median : 45.0   
+##  Mean   :  7.144                Mean   :112.8   
+##  3rd Qu.:  2.000                3rd Qu.:227.0   
+##  Max.   :327.000                Max.   :365.0</code></pre>
+<p>De las columnas de nuestro dataframe, podemos decir por ejemplo que el precio de una noche de los airbnb oscila entre 0 y 10.000 dólares con un promedio de 152.7 dólares, más adelante revisaremos si un precio diario de 10.000 dólares es o no un dato atípico. Adicionalmente, los alojamientos se pueden reservar desde 1 noche sin embargo hay algunos cuyas noches mínimas son de 1.250, alrededor de 3.5 años, esto también es un candidato a dato atípico que será revisado en la siguente sección. Por otro lado, existen anfitriones que tienen hasta 327 alojamientos en la región.</p>
+<p>A pesar, que las columnas <code>id</code>, <code>host_id</code>, <code>latitude</code> y <code>longitude</code> son numéricas, no son relevante las métricas de minimo, máximo, media y cuartiles.</p>
+<p>Evaluando los valores que pueden tomar las variables categóricas usando la función <code>unique</code>, encontramos que los tipos de alojamiento disponibles son: Habitaciones privadas (“Private room”), Apartamentos Completos (“Entire home/apt”) o Habitaciones compartidas (“Shared room”) y tenemos grupos de vencindarios como Brooklyn, Manhattan, Qeens, Staten Island y Bronx y en total 221 vecindarios disponibles para alojamiento.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="análisis-exploratorio-de-los-datos.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(df<span class="sc">$</span>room_type)</span></code></pre></div>
+<pre><code>## [1] &quot;Private room&quot;    &quot;Entire home/apt&quot; &quot;Shared room&quot;</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="análisis-exploratorio-de-los-datos.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(df<span class="sc">$</span>neighbourhood_group)</span></code></pre></div>
+<pre><code>## [1] &quot;Brooklyn&quot;      &quot;Manhattan&quot;     &quot;Queens&quot;        &quot;Staten Island&quot;
+## [5] &quot;Bronx&quot;</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="análisis-exploratorio-de-los-datos.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(df<span class="sc">$</span>neighbourhood))</span></code></pre></div>
+<pre><code>## [1] 221</code></pre>
+</div>
+<div id="datos-atípicos" class="section level2 unnumbered">
+<h2>Datos Atípicos</h2>
+<p>Tenemos sospechas que existen datos atípicos en las columnas <code>price</code> y `minimum_nights. Al analizar los histogramas y boxplots encontramos que estos abarcan la mayor parte del rango de las variables.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="análisis-exploratorio-de-los-datos.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb28-2"><a href="análisis-exploratorio-de-los-datos.html#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="análisis-exploratorio-de-los-datos.html#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span></span>
+<span id="cb28-4"><a href="análisis-exploratorio-de-los-datos.html#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> price) <span class="sc">+</span></span>
+<span id="cb28-5"><a href="análisis-exploratorio-de-los-datos.html#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb28-6"><a href="análisis-exploratorio-de-los-datos.html#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="_main_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="análisis-exploratorio-de-los-datos.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span></span>
+<span id="cb30-2"><a href="análisis-exploratorio-de-los-datos.html#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> minimum_nights) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="análisis-exploratorio-de-los-datos.html#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb30-4"><a href="análisis-exploratorio-de-los-datos.html#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="_main_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="análisis-exploratorio-de-los-datos.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span></span>
+<span id="cb32-2"><a href="análisis-exploratorio-de-los-datos.html#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> price) <span class="sc">+</span></span>
+<span id="cb32-3"><a href="análisis-exploratorio-de-los-datos.html#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb32-4"><a href="análisis-exploratorio-de-los-datos.html#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-14-3.png" width="672" /></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="análisis-exploratorio-de-los-datos.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df) <span class="sc">+</span></span>
+<span id="cb33-2"><a href="análisis-exploratorio-de-los-datos.html#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> minimum_nights) <span class="sc">+</span></span>
+<span id="cb33-3"><a href="análisis-exploratorio-de-los-datos.html#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb33-4"><a href="análisis-exploratorio-de-los-datos.html#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-14-4.png" width="672" /></p>
+<p>Según la función <code>boxplot.stats()$out</code> que se basa en el criterio <code>IQR</code>, los valores atípicos para el precio son aquellos mayores que 335 mientras que para el mínimo de noches el umbral está en 12.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="análisis-exploratorio-de-los-datos.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(<span class="fu">boxplot.stats</span>(df<span class="sc">$</span>price)<span class="sc">$</span>out)</span></code></pre></div>
+<pre><code>## [1] 335</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="análisis-exploratorio-de-los-datos.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(<span class="fu">boxplot.stats</span>(df<span class="sc">$</span>minimum_nights)<span class="sc">$</span>out)</span></code></pre></div>
+<pre><code>## [1] 12</code></pre>
+<p>Si revisamos por el criterio de los percentiles, teniendo en cuenta que las observaciones por fuera del intervalo formado por los percentiles 2.5 y 97.5 se consideran posibles valores atípicos, encontramos que para el precio son potenciales datos atípicos aquellos por debajo de 30 y por encima de 799 y en el caso de las noches mínimas, aquellas obervaciones por debajo de 1 y por encima de 30.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="análisis-exploratorio-de-los-datos.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">quantile</span>(df<span class="sc">$</span>price, <span class="fl">0.025</span>), <span class="fu">quantile</span>(df<span class="sc">$</span>price, <span class="fl">0.975</span>))</span></code></pre></div>
+<pre><code>##  2.5% 97.5% 
+##    35   500</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="análisis-exploratorio-de-los-datos.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">quantile</span>(df<span class="sc">$</span>minimum_nights, <span class="fl">0.025</span>), <span class="fu">quantile</span>(df<span class="sc">$</span>minimum_nights, <span class="fl">0.975</span>))</span></code></pre></div>
+<pre><code>##  2.5% 97.5% 
+##     1    30</code></pre>
+<p>Otro método, es el filtro de Hampel que determina que es un dato atípico si el precio está por encima de 244 y las noches minimas superan las 9.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="análisis-exploratorio-de-los-datos.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">median</span>(df<span class="sc">$</span>price) <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">mad</span>(df<span class="sc">$</span>price, <span class="at">constant =</span> <span class="dv">1</span>), <span class="fu">median</span>(df<span class="sc">$</span>price) <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">mad</span>(df<span class="sc">$</span>price, <span class="at">constant =</span> <span class="dv">1</span>))</span></code></pre></div>
+<pre><code>## [1] -32 244</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="análisis-exploratorio-de-los-datos.html#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">median</span>(df<span class="sc">$</span>minimum_nights) <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">mad</span>(df<span class="sc">$</span>minimum_nights, <span class="at">constant =</span> <span class="dv">1</span>), <span class="fu">median</span>(df<span class="sc">$</span>minimum_nights) <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">mad</span>(df<span class="sc">$</span>minimum_nights, <span class="at">constant =</span> <span class="dv">1</span>))</span></code></pre></div>
+<pre><code>## [1] -3  9</code></pre>
+<p>Siendo conservadores, eliminaremos la menor cantidad de datos atípicos posibles, que se consiguen al usar el umbral dado por el criterio de los percentiles. Siendo así, estamos eliminando el 2.13% de nuestros datos, resultando un dataframe con 1.044 registros menos.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="análisis-exploratorio-de-los-datos.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(df)</span></code></pre></div>
+<pre><code>## [1] 48895</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="análisis-exploratorio-de-los-datos.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(df[df<span class="sc">$</span>price<span class="sc">&gt;</span><span class="dv">335</span>, ])<span class="sc">/</span><span class="fu">nrow</span>(df)<span class="sc">*</span><span class="fl">100.00</span></span></code></pre></div>
+<pre><code>## [1] 6.06197</code></pre>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="análisis-exploratorio-de-los-datos.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(df[df<span class="sc">$</span>price<span class="sc">&gt;</span><span class="dv">500</span>, ])<span class="sc">/</span><span class="fu">nrow</span>(df)<span class="sc">*</span><span class="fl">100.00</span></span></code></pre></div>
+<pre><code>## [1] 2.135188</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="análisis-exploratorio-de-los-datos.html#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(df[df<span class="sc">$</span>price<span class="sc">&gt;</span><span class="dv">244</span>, ])<span class="sc">/</span><span class="fu">nrow</span>(df)<span class="sc">*</span><span class="fl">100.00</span></span></code></pre></div>
+<pre><code>## [1] 13.26311</code></pre>
+<p>Una vez eliminados estos datos atípicos, volveos a extraer las estadísticas de resumen</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="análisis-exploratorio-de-los-datos.html#cb54-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="ot">=</span> df[df<span class="sc">$</span>price<span class="sc">&lt;</span><span class="dv">500</span>, ]</span>
+<span id="cb54-2"><a href="análisis-exploratorio-de-los-datos.html#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df_out)</span></code></pre></div>
+<pre><code>##        id              host_id          neighbourhood_group neighbourhood     
+##  Min.   :    2539   Min.   :     2438   Length:47660        Length:47660      
+##  1st Qu.: 9463850   1st Qu.:  7778878   Class :character    Class :character  
+##  Median :19623162   Median : 30567770   Mode  :character    Mode  :character  
+##  Mean   :18979918   Mean   : 67134263                                         
+##  3rd Qu.:29058184   3rd Qu.:107216950                                         
+##  Max.   :36487245   Max.   :274321313                                         
+##     latitude       longitude       room_type             price      
+##  Min.   :40.50   Min.   :-74.24   Length:47660       Min.   :  0.0  
+##  1st Qu.:40.69   1st Qu.:-73.98   Class :character   1st Qu.: 68.0  
+##  Median :40.72   Median :-73.96   Mode  :character   Median :100.0  
+##  Mean   :40.73   Mean   :-73.95                      Mean   :130.1  
+##  3rd Qu.:40.76   3rd Qu.:-73.94                      3rd Qu.:170.0  
+##  Max.   :40.91   Max.   :-73.71                      Max.   :499.0  
+##  minimum_nights     number_of_reviews reviews_per_month
+##  Min.   :   1.000   Min.   :  0.00    Min.   : 0.000   
+##  1st Qu.:   1.000   1st Qu.:  1.00    1st Qu.: 0.040   
+##  Median :   2.000   Median :  5.00    Median : 0.380   
+##  Mean   :   6.978   Mean   : 23.59    Mean   : 1.102   
+##  3rd Qu.:   5.000   3rd Qu.: 24.00    3rd Qu.: 1.610   
+##  Max.   :1250.000   Max.   :629.00    Max.   :58.500   
+##  calculated_host_listings_count availability_365
+##  Min.   :  1.000                Min.   :  0     
+##  1st Qu.:  1.000                1st Qu.:  0     
+##  Median :  1.000                Median : 42     
+##  Mean   :  7.096                Mean   :111     
+##  3rd Qu.:  2.000                3rd Qu.:221     
+##  Max.   :327.000                Max.   :365</code></pre>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="análisis-exploratorio-de-los-datos.html#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb56-2"><a href="análisis-exploratorio-de-los-datos.html#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="análisis-exploratorio-de-los-datos.html#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_out) <span class="sc">+</span></span>
+<span id="cb56-4"><a href="análisis-exploratorio-de-los-datos.html#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> price) <span class="sc">+</span></span>
+<span id="cb56-5"><a href="análisis-exploratorio-de-los-datos.html#cb56-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;pink&quot;</span>) <span class="sc">+</span></span>
+<span id="cb56-6"><a href="análisis-exploratorio-de-los-datos.html#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="_main_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="análisis-exploratorio-de-los-datos.html#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_out) <span class="sc">+</span></span>
+<span id="cb58-2"><a href="análisis-exploratorio-de-los-datos.html#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> price) <span class="sc">+</span></span>
+<span id="cb58-3"><a href="análisis-exploratorio-de-los-datos.html#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">&quot;pink&quot;</span>) <span class="sc">+</span></span>
+<span id="cb58-4"><a href="análisis-exploratorio-de-los-datos.html#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-20-2.png" width="672" /></p>
+</div>
+<div id="análisis-del-anfitrion" class="section level2 unnumbered">
+<h2>Análisis del anfitrion</h2>
+<p>A través de la función de agrupación <code>group_by</code>, podemos obtener los anfitriones con más alojamientos disponibles, encontrando que el mayor tiene 272 lo que no es consistente con el máximo valor encontrado en la columna <code>calculated_host_listings_count</code> debido a la eliminación de datos atípicos realizados anteriormente, es por esto, que esta columna, se eliminará del dataframe.</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="análisis-exploratorio-de-los-datos.html#cb59-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span></span>
+<span id="cb59-2"><a href="análisis-exploratorio-de-los-datos.html#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(host_id) <span class="sc">%&gt;%</span></span>
+<span id="cb59-3"><a href="análisis-exploratorio-de-los-datos.html#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb59-4"><a href="análisis-exploratorio-de-los-datos.html#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb59-5"><a href="análisis-exploratorio-de-los-datos.html#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>) <span class="ot">-&gt;</span> top_hostid</span></code></pre></div>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="análisis-exploratorio-de-los-datos.html#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span> top_hostid, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(host_id), <span class="at">y=</span>n)) <span class="sc">+</span></span>
+<span id="cb61-2"><a href="análisis-exploratorio-de-los-datos.html#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb61-3"><a href="análisis-exploratorio-de-los-datos.html#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Host_Id&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Cant. alojamientos&quot;</span>) <span class="sc">+</span></span>
+<span id="cb61-4"><a href="análisis-exploratorio-de-los-datos.html#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Top 5 de los anfitriones con más alojamientos&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="análisis-exploratorio-de-los-datos.html#cb62-1" aria-hidden="true" tabindex="-1"></a>borrar <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;calculated_host_listings_count&quot;</span>)</span>
+<span id="cb62-2"><a href="análisis-exploratorio-de-los-datos.html#cb62-2" aria-hidden="true" tabindex="-1"></a>df_out <span class="ot">=</span> df_out[, <span class="sc">!</span>(<span class="fu">names</span>(df_out) <span class="sc">%in%</span> borrar)]</span></code></pre></div>
+<p>Ahora, revisemos la distribución de alojamientos por grupos de vecindarios.</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="análisis-exploratorio-de-los-datos.html#cb63-1" aria-hidden="true" tabindex="-1"></a>df_host <span class="ot">=</span> <span class="fu">filter</span>(df_out, host_id <span class="sc">%in%</span> top_hostid<span class="sc">$</span>host_id)</span>
+<span id="cb63-2"><a href="análisis-exploratorio-de-los-datos.html#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-3"><a href="análisis-exploratorio-de-los-datos.html#cb63-3" aria-hidden="true" tabindex="-1"></a>df_host<span class="sc">%&gt;%</span></span>
+<span id="cb63-4"><a href="análisis-exploratorio-de-los-datos.html#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(host_id, neighbourhood_group) <span class="sc">%&gt;%</span></span>
+<span id="cb63-5"><a href="análisis-exploratorio-de-los-datos.html#cb63-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb63-6"><a href="análisis-exploratorio-de-los-datos.html#cb63-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">factor</span>(host_id), <span class="at">y=</span>n, <span class="at">fill=</span><span class="fu">factor</span>(neighbourhood_group))) <span class="sc">+</span> </span>
+<span id="cb63-7"><a href="análisis-exploratorio-de-los-datos.html#cb63-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">position=</span><span class="st">&quot;dodge&quot;</span>)<span class="sc">+</span></span>
+<span id="cb63-8"><a href="análisis-exploratorio-de-los-datos.html#cb63-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Host_id&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Cant. Alojamientos&quot;</span>) <span class="sc">+</span></span>
+<span id="cb63-9"><a href="análisis-exploratorio-de-los-datos.html#cb63-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Top 5 de anfitriones con más alojamientos distribuidos por grupo vecindario&quot;</span>)<span class="sc">+</span></span>
+<span id="cb63-10"><a href="análisis-exploratorio-de-los-datos.html#cb63-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>()</span></code></pre></div>
+<pre><code>## `summarise()` regrouping output by &#39;host_id&#39; (override with `.groups` argument)</code></pre>
+<p><img src="_main_files/figure-html/unnamed-chunk-22-1.png" width="960" /></p>
+<p>A pesar, que los grupos de vecindarios disponibles coresponden a Brooklyn, Manhattan, Qeens, Staten Island y Bronx, vemos que los anfitriones con más alojamientos no tienen disponibilidad en Staten Island y Bronx y exceptuando el host 137358866, la mayoría de estos alojamientos se encuentran en Manhattan y solo dos de estos cinco tienenalojamientos en Brooklyn.</p>
+<p>Si revisamos la distribución de los precios de estos cinco anfitriones, atraves, de un <code>boxplot</code>, tenemos que el anfitrion 107434423 tiene el mayor precio promedio y el anfitrion 137358866 tiene todos sus alojamnientos en precios similares y más bajos en comparación con los otros.</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="análisis-exploratorio-de-los-datos.html#cb65-1" aria-hidden="true" tabindex="-1"></a>df_host<span class="sc">%&gt;%</span></span>
+<span id="cb65-2"><a href="análisis-exploratorio-de-los-datos.html#cb65-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">factor</span>(host_id), <span class="at">y=</span>price)) <span class="sc">+</span> </span>
+<span id="cb65-3"><a href="análisis-exploratorio-de-los-datos.html#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">&quot;pink&quot;</span>)<span class="sc">+</span></span>
+<span id="cb65-4"><a href="análisis-exploratorio-de-los-datos.html#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Host_Id&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio&quot;</span>) <span class="sc">+</span></span>
+<span id="cb65-5"><a href="análisis-exploratorio-de-los-datos.html#cb65-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Distribución de precios para los 5 anfitriones con más alojamientos&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-23-1.png" width="960" /></p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="análisis-exploratorio-de-los-datos.html#cb66-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>()</span></code></pre></div>
+<pre><code>##  Named list()
+##  - attr(*, &quot;class&quot;)= chr [1:2] &quot;theme&quot; &quot;gg&quot;
+##  - attr(*, &quot;complete&quot;)= logi FALSE
+##  - attr(*, &quot;validate&quot;)= logi TRUE</code></pre>
+</div>
+<div id="análisis-de-los-precios" class="section level2 unnumbered">
+<h2>Análisis de los precios</h2>
+<p>Si ahora revisamos los precios, vemos que el mayor precio promedio por noche está en la zona de Manhattan para los tres tipos de alojamiento, adicionalmente y como era de esperarse, es más costoso un alojamiento completo, seguido de una habitación privada y por útimo una habitación compartida, aunque no hay una gran diferencia entre los valores promedios de las habitaciones. Este patrón se mantiene igual, independiente del grupo de vecindario al que pertenezca.</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="análisis-exploratorio-de-los-datos.html#cb68-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="sc">%&gt;%</span></span>
+<span id="cb68-2"><a href="análisis-exploratorio-de-los-datos.html#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(neighbourhood_group, room_type)<span class="sc">%&gt;%</span></span>
+<span id="cb68-3"><a href="análisis-exploratorio-de-los-datos.html#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">m =</span> <span class="fu">mean</span>(price)) <span class="ot">-&gt;</span> group_type</span></code></pre></div>
+<pre><code>## `summarise()` regrouping output by &#39;neighbourhood_group&#39; (override with `.groups` argument)</code></pre>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="análisis-exploratorio-de-los-datos.html#cb70-1" aria-hidden="true" tabindex="-1"></a>group_type<span class="sc">%&gt;%</span></span>
+<span id="cb70-2"><a href="análisis-exploratorio-de-los-datos.html#cb70-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>room_type, <span class="at">y=</span>m, <span class="at">fill=</span>room_type)) <span class="sc">+</span> </span>
+<span id="cb70-3"><a href="análisis-exploratorio-de-los-datos.html#cb70-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>)<span class="sc">+</span></span>
+<span id="cb70-4"><a href="análisis-exploratorio-de-los-datos.html#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>neighbourhood_group)<span class="sc">+</span></span>
+<span id="cb70-5"><a href="análisis-exploratorio-de-los-datos.html#cb70-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Grupo Vecindario&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;Precio Medio&quot;</span>) <span class="sc">+</span></span>
+<span id="cb70-6"><a href="análisis-exploratorio-de-los-datos.html#cb70-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Precio promedio por grupo de vecindario y tipo de alojamiento&quot;</span>)<span class="sc">+</span></span>
+<span id="cb70-7"><a href="análisis-exploratorio-de-los-datos.html#cb70-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>El grupo de vecindario con el precio promedio más alto es Manhattan y en este grupo se manejan el mayor rango de precios. Los precios para Queen y Staten Island tienen distribuciones similares.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="análisis-exploratorio-de-los-datos.html#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>df_out, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>neighbourhood_group, <span class="at">y=</span>price)) <span class="sc">+</span></span>
+<span id="cb71-2"><a href="análisis-exploratorio-de-los-datos.html#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>()<span class="sc">+</span></span>
+<span id="cb71-3"><a href="análisis-exploratorio-de-los-datos.html#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width=</span><span class="fl">0.2</span>)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p>Si agrupamos por tipo de alojamiento, vemos que los valores por habitaión compartida en Staten Island presentan una distribución distintas a las demás con un rango mayor y un sesgo hacia la izquierda. En cuanto a las habitaciones privadas tenemos una alta concentración de valores atípicos. En los alojamientos completos por grupo el precio es consistente, sin muchos valores atípicos.</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="análisis-exploratorio-de-los-datos.html#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>df_out, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x=</span>neighbourhood_group, <span class="at">y=</span>price)) <span class="sc">+</span></span>
+<span id="cb72-2"><a href="análisis-exploratorio-de-los-datos.html#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_violin</span>()<span class="sc">+</span></span>
+<span id="cb72-3"><a href="análisis-exploratorio-de-los-datos.html#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width=</span><span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb72-4"><a href="análisis-exploratorio-de-los-datos.html#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>room_type)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+</div>
+<div id="visualziación-en-mapas" class="section level2 unnumbered">
+<h2>Visualziación en mapas</h2>
+<p>Para los datos de interés, contamos con la ubicación (latitud, longitud) de los alojamientos en Nueva York. Revisaremos la distribución de estos en un mapa, através de la función <code>gg_map</code>, ubicándonos precisamente en Nueva York, encontrando que la menor cantidad de alojamientos se encuentra en “Staten Island”</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="análisis-exploratorio-de-los-datos.html#cb73-1" aria-hidden="true" tabindex="-1"></a>myLocation <span class="ot">&lt;-</span> <span class="st">&quot;Nueva York&quot;</span></span>
+<span id="cb73-2"><a href="análisis-exploratorio-de-los-datos.html#cb73-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-3"><a href="análisis-exploratorio-de-los-datos.html#cb73-3" aria-hidden="true" tabindex="-1"></a>myMap <span class="ot">&lt;-</span> <span class="fu">get_map</span>(<span class="at">location =</span> myLocation, <span class="at">zoom =</span> <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>## Source : https://maps.googleapis.com/maps/api/staticmap?center=Nueva%20York&amp;zoom=10&amp;size=640x640&amp;scale=2&amp;maptype=terrain&amp;language=en-EN&amp;key=xxx</code></pre>
+<pre><code>## Source : https://maps.googleapis.com/maps/api/geocode/json?address=Nueva+York&amp;key=xxx</code></pre>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="análisis-exploratorio-de-los-datos.html#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggmap</span>(myMap) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data=</span>df_out, <span class="fu">aes</span>(<span class="at">x =</span> longitude, <span class="at">y =</span> latitude, <span class="at">colour=</span> neighbourhood_group))</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p>En Bronx, hay pocos precios altos en los alojamientos y los que existen se encuebntran a los alrededores de la localidad. Si nos enfocamos en Manhattan, vemos que hay una clara división en los precios, los menores se encuentran al norte y los mayores al sur.</p>
+<p>En general hay pocos alojamientos con precios altos en comparación con los de precios bajos.</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="análisis-exploratorio-de-los-datos.html#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggmap</span>(myMap) <span class="sc">+</span> </span>
+<span id="cb77-2"><a href="análisis-exploratorio-de-los-datos.html#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>df_out, <span class="fu">aes</span>(<span class="at">x =</span> longitude, <span class="at">y =</span> latitude, <span class="at">colour=</span> price))<span class="sc">+</span></span>
+<span id="cb77-3"><a href="análisis-exploratorio-de-los-datos.html#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_gradientn</span>(<span class="at">colours =</span> <span class="fu">rainbow</span>(<span class="dv">5</span>))<span class="sc">+</span></span>
+<span id="cb77-4"><a href="análisis-exploratorio-de-los-datos.html#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>neighbourhood_group)</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="cargue-y-limpieza-de-datos.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/02-EDA.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
