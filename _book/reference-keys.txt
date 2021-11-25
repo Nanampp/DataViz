@@ -1,7 +1,0 @@
-sobre-este-libro
-paquetes-necesarios
-cargue-y-limpieza-de-datos
-carga-de-datos
-revisión-de-datos-faltantes
-creación-en-base-de-datos
-análisis-exploratorio-de-los-datos
