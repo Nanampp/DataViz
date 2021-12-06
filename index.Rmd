@@ -6,7 +6,7 @@ site: bookdown::bookdown_site
 documentclass: book
 bibliography: [book.bib, packages.bib]
 # url: your book url like https://bookdown.org/yihui/bookdown
-# cover-image: path to the social sharing image like images/cover.jpg
+cover-image: "Images/cover.jfif"
 description: |
   Ese libro contiene el detalle del proyecto enfocado a sistemas de información geográfica.
 link-citations: yes
@@ -17,9 +17,18 @@ github-repo: rstudio/bookdown-demo
 
 Este libro contiene el detalle del proyecto enfocado a sistemas de información geográfica. Se estará trabajando con un archivo tomado de *Kaggle* en <https://www.kaggle.com/dgomonov/data-exploration-on-nyc-airbnb> que contiene información resumida y métricas para Airbnb en la ciudad de Nueva York en 2019.
 
+##  Objetivos
+
+Este documento pretente encontrar como están distribuidos los precios de los airbnb en Nueva York. Haciendo un análisis por anfitrión, por tipo de alojamiento y por grupo de vecindario. Para lograr esto, realizaremos:
+
+- Un análisis preliminar de los datos
+- Un análisis de datos faltantes y atípicos que puedan entorpecer las conclusiones.
+- Un análisis por distribución geográfica.
+ 
+
 ## Paquetes Necesarios
 
-Para poder trabajar con datos se hace necesario cargar una serie de librerías.
+Para poder trabajar con estos datos se hace necesario cargar una serie de librerías.
 
 1. Para el cargue delarchivo csv, utilizaremos el paquete `readr`.
 2. Para el manejo de dataframe, utilziaremos el paquete `dplyr`.
@@ -39,5 +48,8 @@ library(DBI)
 library(RPostgres)
 library(ggplot2)
 library(ggmap)
+library(plotly)
+library(outliers)
+library(EnvStats)
 ```
 

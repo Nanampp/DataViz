@@ -6,7 +6,7 @@ site: bookdown::bookdown_site
 documentclass: book
 bibliography: [book.bib, packages.bib]
 # url: your book url like https://bookdown.org/yihui/bookdown
-# cover-image: path to the social sharing image like images/cover.jpg
+cover-image: "Images/cover.jfif"
 description: |
   Ese libro contiene el detalle del proyecto enfocado a sistemas de información geográfica.
 link-citations: yes
@@ -17,9 +17,18 @@ github-repo: rstudio/bookdown-demo
 
 Este libro contiene el detalle del proyecto enfocado a sistemas de información geográfica. Se estará trabajando con un archivo tomado de *Kaggle* en <https://www.kaggle.com/dgomonov/data-exploration-on-nyc-airbnb> que contiene información resumida y métricas para Airbnb en la ciudad de Nueva York en 2019.
 
+##  Objetivos
+
+Este documento pretente encontrar como están distribuidos los precios de los airbnb en Nueva York. Haciendo un análisis por anfitrión, por tipo de alojamiento y por grupo de vecindario. Para lograr esto, realizaremos:
+
+- Un análisis preliminar de los datos
+- Un análisis de datos faltantes y atípicos que puedan entorpecer las conclusiones.
+- Un análisis por distribución geográfica.
+ 
+
 ## Paquetes Necesarios
 
-Para poder trabajar con datos se hace necesario cargar una serie de librerías.
+Para poder trabajar con estos datos se hace necesario cargar una serie de librerías.
 
 1. Para el cargue delarchivo csv, utilizaremos el paquete `readr`.
 2. Para el manejo de dataframe, utilziaremos el paquete `dplyr`.
@@ -39,6 +48,9 @@ library(DBI)
 library(RPostgres)
 library(ggplot2)
 library(ggmap)
+library(plotly)
+library(outliers)
+library(EnvStats)
 ```
 
 
@@ -46,22 +58,23 @@ library(ggmap)
 
 # Cargue y Limpieza de Datos
 
-En este capítulo abordaremos el cargue de los datos de AIRBNB de la ciudad de Nueva York en el año 2019.
+En este capítulo abordaremos el cargue de los datos de *Airbnb* de la ciudad de Nueva York en el año 2019.
 
 
 ## Carga de datos
 
-El archivo `CSV` con el listado de Airbnb de la ciudad de Nueva York para el año 2019 descargado de *Kaggle* se cargará en una base de datos en `Heroku Postgress`. Pero para lograr esto, primero debemos cargar como `dataframe` el archivo  a través de la función `read.csv()`, agregando la isntrucción `na = c("", "NA")` para tomar los valores vacíos como datos faltantes `na`.
+El archivo `CSV` con el listado de Airbnb de la ciudad de Nueva York para el año 2019 descargado de *Kaggle* se cargará en una base de datos en `Heroku Postgress`. Pero para lograr esto, primero debemos cargar como `dataframe` el archivo  a través de la función `read.csv()`, agregando la instrucción `na = c("", "NA")` para tomar los valores vacíos como datos faltantes `na`.
 
 ```{r}
 airbnb <- read.csv(file = "Datasets/AB_NYC_2019.csv", na = c("", "NA"))
 head(airbnb)
 ```
+
 Este archivo contiene 48.895 registros y 16 variables para análisis. En la siguiente sección revisaremos si existen datos faltantes en el dataset.
 
 ## Revisión de datos faltantes
 
-Para determinar la existencia de datos faltantes en el dataframe *Airbnb*, primero determinaremos por columna cual es su proporción de datos faltantes contando los valores `na`.
+Para determinar la existencia de datos faltantes en el dataframe *Airbnb*, primero determinaremos por columna cual es su proporción de valores `na`.
 
 ```{r}
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
@@ -69,23 +82,22 @@ apply(airbnb,2,pMiss)
 ```
 Tenemos valores faltantes en las colunmnas `name`, `host_name`, `last_review` y `reviews_per_month`, sin embargo, solo estas dos últimas estan por encima del umbral seguro (5%), lo que podría indicarnos a priori que son variables que deben eliminarse porque no aportarán al análisis. Sin embargo, esta es una decisión que debe tomarse con un mayor análisis de estos registros.
 
+Haremos uso de la función `md.pattern` del paquete `mice`, que nos brinda visualmente el patrón de los datos faltantes, para un mejor entendimiento de estos. 
 
-Haremos uso de la función `md.pattern` del paquete `mice`, que nos brinda visualmente el patron de los datos faltantes, para un mejor entendiemiento de estos. 
-
-```{r}
+```{r fig.width=27, fig.height=10}
 md.pattern(airbnb, plot = TRUE, rotate.names=TRUE)
 ```
+
 El patrón nos indica que 38.821 registros no tienen datos faltantes, que los datos faltantes se encuentran en las colunmnas `name`, `host_name`, `last_review` y `reviews_per_month` (como habíamos encontrado anteriormente), con 16, 21, 10.052 y 10.052 registros, respectivamente. Adicionalmente, el mayor número de registros con datos faltantes (10.037) se encuentran en el patrón que solo contiene `na` en las columnas `last_review` y `reviews_per_month` y solo hay tres filas que contienen más de un valor perdido y de esas solo dos contienen más de dos valores perdidos.
 
-
-Haciendo uso del paquete `VIM`, podemos ver la proporción de datos faltantes graficamente. Por cuestión de espacio y mejor visualización del gráfico, trabajaremos con el dataframe solo con la columnas identificadas anteriormente que tienen datos faltantes
+Haciendo uso del paquete `VIM`, podemos ver la proporción de datos faltantes gráficamente. Por cuestión de espacio y mejor visualización del gráfico, trabajaremos con el dataframe solo con la columnas identificadas anteriormente que tienen datos faltantes
 
 ```{r  fig.width=10}
 airbnb_columns=airbnb[,c("name","host_name","last_review","reviews_per_month")]
 aggr(airbnb_columns, numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.5, gap=3)
 ```
-El gráfico de barras anterior, nos muestra que las columnas `last_review` y `reviews_per_month` representan la mayor proporción de datos faltantes y la proporción para la columnas `name` y `host_name` no es significativa. Este nuevo patrón nos complemente el anterior obtenido con el paquete `mice`puesto que nos indica adicionalmente que el 79,4% de los datos no tienen datos perdidos y nos muestra la proporción de filas que tienen un determinado patrón de datos perdidos, por ejemplo, el 20,52% tienen el patron de datos perdidos solo en las columnas en las columnas `last_review` y `reviews_per_month`.
 
+El gráfico de barras anterior, nos muestra que las columnas `last_review` y `reviews_per_month` representan la mayor proporción de datos faltantes y la proporción para la columnas `name` y `host_name` no es significativa. Este nuevo patrón nos complemente el anterior obtenido con el paquete `mice`puesto que nos indica adicionalmente que el 79,4% de los datos no tienen datos perdidos y nos muestra la proporción de filas que tienen un determinado patrón de datos perdidos, por ejemplo, el 20,52% tienen el patrón de datos perdidos sólo en las columnas en las columnas `last_review` y `reviews_per_month`.
 
 El número de datos perdidos en el dataframe es bastante significativo (20.6%), sin embargo, al analizar lo que significan las columnas que los tienen, vemos por un lado que para el análisis posterior las columnas `name` y `host_name` no son necesarias y pueden elimminarse.
 
@@ -95,9 +107,7 @@ airbnb = airbnb[, !(names(airbnb) %in% borrar)]
 head(airbnb)
 ```
 
-
-Por otro lado, al analizar los registros faltantes en las columnas `last_review` y `reviews_per_month`, encontramos que todos corresponden a aquellos registros donde no existen una evaluación por lo tanto, el manejo de estos datos es simple y se procede de la siguiente manera, se asigna un `0` en la columna `reviews_per_month` y se elimina la columna `last_review` por no tener valor significativo para nuestro análisis posterior. 
-
+Por otro lado, al analizar los registros faltantes en las columnas `last_review` y `reviews_per_month`, encontramos que todos corresponden a aquellos donde no existen una evaluación por lo tanto, el manejo de estos datos es simple y se procede de la siguiente manera, se asigna un `0` en la columna `reviews_per_month` y se elimina la columna `last_review` por no tener valor significativo para nuestro análisis posterior. 
 
 ```{r}
 borrar = c("last_review")
@@ -107,6 +117,7 @@ airbnb <- mutate_at(airbnb, c("reviews_per_month"), ~replace(., is.na(.), 0))
 head(airbnb)
 
 ```
+
 En este punto nuestros datos ya no tienen valores faltantes y trabajaremos en adelante con un dataframe de 48.895 y 13 variables.
 
 ```{r}
@@ -131,6 +142,8 @@ Una vez tengamos establecida la conexión, insertamos los datos en la tabla `air
 ```{r}
 dbWriteTable(con, 'airbnb', airbnb, row.names=FALSE, overwrite=TRUE)
 ```
+
+![](Images/creaciontabla.png){hight=30}
 
 Verifiquemos que podamos leer los datos, através de la función `dbGetQuery()`
 
@@ -159,7 +172,8 @@ con <- dbConnect(RPostgres::Postgres(),
 df = dbGetQuery(con, "SELECT * FROM airbnb")
 summary(df)
 ```
-De las columnas de nuestro dataframe, podemos decir por ejemplo que el precio de una noche de los airbnb oscila entre 0 y 10.000 dólares con un promedio de 152.7 dólares, más adelante revisaremos si un precio diario de 10.000 dólares es o no un dato atípico. Adicionalmente, los alojamientos se pueden reservar desde 1 noche sin embargo hay algunos cuyas noches mínimas son de 1.250, alrededor de 3.5 años, esto también es un candidato a dato atípico que será revisado en la siguente sección. Por otro lado, existen anfitriones que tienen hasta 327 alojamientos en la región.
+
+De las columnas de nuestro dataframe, podemos decir por ejemplo que el precio de una noche de los airbnb oscila entre 0 y 10.000 dólares con un promedio de 152.7 dólares, más adelante revisaremos si un precio diario de 10.000 dólares es o no un dato atípico. Adicionalmente, los alojamientos se pueden reservar desde una (1) noche, sin embargo hay algunos cuyas noches mínimas son de 1.250, alrededor de 3.5 años, esto también es un candidato a dato atípico que será revisado en la siguente sección. Por otro lado, existen anfitriones que tienen hasta 327 alojamientos en la región.
 
 A pesar, que las columnas `id`, `host_id`, `latitude` y `longitude` son numéricas, no son relevante las métricas de minimo, máximo, media y cuartiles.
 
@@ -173,32 +187,82 @@ length(unique(df$neighbourhood))
 
 ## Datos Atípicos {-}
 
-Tenemos sospechas que existen datos atípicos en las columnas `price` y `minimum_nights. Al analizar los histogramas y boxplots encontramos que estos abarcan la mayor parte del rango de las variables.
+Tenemos sospechas que existen datos atípicos en las columnas `price` y `minimum_nights`. Al analizar los histogramas y boxplots encontramos que estos abarcan la mayor parte del rango de las variables.
 
 ```{r}
 par(mfrow = c(1, 2))
 
-ggplot(df) +
+g1 = ggplot(df) +
   aes(x = price) +
   geom_histogram(fill = "blue") +
   theme_minimal()
 
-ggplot(df) +
+
+g2 = ggplot(df) +
   aes(x = minimum_nights) +
   geom_histogram(fill = "red") +
   theme_minimal()
 
 
-ggplot(df) +
+g3 = ggplot(df) +
   aes(x = "", y = price) +
   geom_boxplot(fill = "blue") +
   theme_minimal()
 
 
-ggplot(df) +
+g4 = ggplot(df) +
   aes(x = "", y = minimum_nights) +
   geom_boxplot(fill = "red") +
   theme_minimal()
+
+
+fig = subplot(g1, g3,g2,g4, nrows = 2, shareX = FALSE)
+
+annotations = list( 
+  list( 
+    x = 0.2,  
+    y = 1.0,  
+    text = "Price",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.8,  
+    y = 1,  
+    text = "",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.2,  
+    y = 0.43,  
+    text = "Minimum_nights",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),
+  list( 
+    x = 0.8,  
+    y = 0.45,  
+    text = "",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ))
+
+fig <- fig %>%layout(annotations = annotations) 
+#options(warn = -1)
+fig
 ```
 
 Según la función `boxplot.stats()$out` que se basa en el criterio `IQR`, los valores atípicos para el precio son aquellos mayores que 335 mientras que para el mínimo de noches el umbral está en 12.
@@ -215,46 +279,130 @@ c(quantile(df$price, 0.025), quantile(df$price, 0.975))
 c(quantile(df$minimum_nights, 0.025), quantile(df$minimum_nights, 0.975))
 ```
 
-Otro método, es el filtro de Hampel que determina que es un dato atípico si el precio está por encima de 244 y las noches minimas superan las 9.
+Otro método, es el filtro de Hampel que determina un dato atípico estableciendo un intervalo formado por la mediana, teniendo entonces para este caso que si el precio está por encima de 244 y las noches minimas superan las 9.
 
 ```{r}
 c(median(df$price) - 3 * mad(df$price, constant = 1), median(df$price) + 3 * mad(df$price, constant = 1))
 c(median(df$minimum_nights) - 3 * mad(df$minimum_nights, constant = 1), median(df$minimum_nights) + 3 * mad(df$minimum_nights, constant = 1))
 ```
 
-Siendo conservadores, eliminaremos la menor cantidad de datos atípicos posibles, que se consiguen al usar el umbral dado por el criterio de los percentiles. Siendo así, estamos eliminando el 2.13% de nuestros datos, resultando un dataframe con 1.044 registros menos.
+Ahora bien, revisemos la prueba de Grubbs haciendo uso de la función `grubbs.test` que detecta si el valor más alto o más bajo del conjunto de datos es un valor atípico. 
+
+```{r}
+grubbs.test(df$price)
+grubbs.test(df$price, opposite = TRUE)
+grubbs.test(df$minimum_nights)
+grubbs.test(df$minimum_nights, opposite = TRUE)
+```
+Teniendo un umbral $\alpha = 0.05$, tenemos que para el caso del precio, el p-valor es menor cuando se evalua la hipótesis nula $H_0: \text{El valor más alto no es un valor atípico}$ pero es mayor que este umbral escogido cuando se evalua la hopótesis nula $H_0: \text{El valor más bajo no es un valor atípico}$, por lo tanto la primera hipótesis se rechaza y la segunda se acepta por lo que se concluye que el valor más alto es valor atípico y el valor más bajo no lo es. Obtenemos el mismo resultado en el caso de las noches mínimas.
+
+En este caso no realizamos la prueba de Dixon, que al igual que la Grubbs detecta si el valor más alto o más bajo es atípico porque esta prueba funciona mejor en conjunts de datos que tienen menos de 25 elementos y este no es nuestro caso. Sin embargo, realizaremos una última prueba, la de Rosner que a diferencia de las otras nos ayuda a detectar varios valores atípicos a la vez, eso usando la función `rosnerTest`.
+
+Esta prueba debe recibir además del dataset, el número de presuntos valores atípicos. Para determinar dicho número, usaremos los resultados de las pruebas anteriores (no basadas en el valor p), dónde habíamos encontrados en un caso que los valores por encima de 500 para el precio y por encima de 30 para las noches mínimas, representaban valores atípicos. El número de registros por encima de estos valores será usado como el *k* de la función `rosnerTest`.
+
+```{r}
+nrow(df[df$price>500, ])
+test <- rosnerTest(df$price, k = 1044)
+head(test$all.stats,1000)
+```
+```{r}
+nrow(df[df$minimum_nights>30, ])
+test <- rosnerTest(df$minimum_nights, k = 747)
+head(test$all.stats,1000)
+```
+El test de Rosner nos indica que son valores atípicos, precios a partir de 575 dólares y noches mínimas a partir de 50. Usando este criterio, eliminamos el 2.8% de nuestros datos, resultando un dataframe con 1370 registros menos.
 
 ```{r}
 nrow(df)
-nrow(df[df$price>335, ])/nrow(df)*100.00
-nrow(df[df$price>500, ])/nrow(df)*100.00
-nrow(df[df$price>244, ])/nrow(df)*100.00
+nrow(df[df$price>=575 | df$minimum_nights>=50 , ])
+nrow(df[df$price>=575 | df$minimum_nights>=50 , ])/nrow(df)*100.00
 ```
-
-Una vez eliminados estos datos atípicos, volveos a extraer las estadísticas de resumen
+Una vez eliminados estos datos atípicos, volvemos a extraer las estadísticas de resumen:
 
 ```{r}
-df_out = df[df$price<500, ]
+df_out = df[df$price<575 & df$minimum_nights<50, ]
 summary(df_out)
 ```
-```{r}
-par(mfrow = c(1, 2))
 
-ggplot(df_out) +
+
+```{r}
+g1 = ggplot(df_out) +
   aes(x = price) +
   geom_histogram(fill = "pink") +
   theme_minimal()
 
-ggplot(df_out) +
+
+g2 = ggplot(df_out) +
+  aes(x = minimum_nights) +
+  geom_histogram(fill = "orange") +
+  theme_minimal()
+
+
+g3 = ggplot(df_out) +
   aes(x = "", y = price) +
   geom_boxplot(fill = "pink") +
   theme_minimal()
+
+
+g4 = ggplot(df_out) +
+  aes(x = "", y = minimum_nights) +
+  geom_boxplot(fill = "orange") +
+  theme_minimal()
+
+
+fig = subplot(g1, g3,g2,g4, nrows = 2, shareX = FALSE)
+
+annotations = list( 
+  list( 
+    x = 0.2,  
+    y = 1.0,  
+    text = "Price",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.8,  
+    y = 1,  
+    text = "",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),  
+  list( 
+    x = 0.2,  
+    y = 0.43,  
+    text = "Minimum_nights",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ),
+  list( 
+    x = 0.8,  
+    y = 0.45,  
+    text = "",  
+    xref = "paper",  
+    yref = "paper",  
+    xanchor = "center",  
+    yanchor = "bottom",  
+    showarrow = FALSE 
+  ))
+
+fig <- fig %>%layout(annotations = annotations) 
+#options(warn = -1)
+fig
 
 ```
 
 ## Análisis del anfitrion {-}
 
-A través de la función de agrupación `group_by`, podemos obtener los anfitriones con más alojamientos disponibles, encontrando que el mayor tiene 272 lo que no es consistente con el máximo valor encontrado en la columna `calculated_host_listings_count` debido a la eliminación de datos atípicos realizados anteriormente, es por esto, que esta columna, se eliminará del dataframe.
+A través de la función de agrupación `group_by`, podemos obtener los anfitriones con más alojamientos disponibles, encontrando que el mayor tiene 317 lo que no es consistente con el máximo valor encontrado en la columna `calculated_host_listings_count` (327) debido a la eliminación de datos atípicos realizados anteriormente, es por esto, que esta columna, se eliminará del dataframe.
 
 ```{r}
 df_out %>%
@@ -263,11 +411,12 @@ df_out %>%
   arrange(desc(n)) %>%
   head(5) -> top_hostid
 
-ggplot(data= top_hostid, aes(x = factor(host_id), y=n)) +
+g = ggplot(data= top_hostid, aes(x = reorder(factor(host_id), n), y=n)) +
   geom_bar(stat="identity", fill = "blue") +
   xlab("Host_Id") + ylab("Cant. alojamientos") +
   ggtitle("Top 5 de los anfitriones con más alojamientos")
 
+ggplotly(g)
 
 borrar = c("calculated_host_listings_count")
 df_out = df_out[, !(names(df_out) %in% borrar)]
@@ -286,22 +435,28 @@ df_host%>%
   geom_bar(stat="identity", position="dodge")+
   xlab("Host_id") + ylab("Cant. Alojamientos") +
   ggtitle("Top 5 de anfitriones con más alojamientos distribuidos por grupo vecindario")+
-  theme()
+  theme(legend.title = element_blank()) -> g
+
+ggplotly(g)
 ```
 
-A pesar, que los grupos de vecindarios disponibles coresponden a Brooklyn, Manhattan, Qeens, Staten Island y Bronx, vemos que los anfitriones con más alojamientos no tienen disponibilidad en Staten Island y Bronx y exceptuando el host 137358866, la mayoría de estos alojamientos se encuentran en Manhattan y solo dos de estos cinco tienenalojamientos en Brooklyn.
+A pesar, que los grupos de vecindarios disponibles corresponden a Brooklyn, Manhattan, Qeens, Staten Island y Bronx, vemos que los anfitriones con más alojamientos no tienen disponibilidad en Staten Island y Bronx, la mayoría de estos alojamientos se encuentran en Manhattan y solo dos de estos cinco tienen alojamientos en Brooklyn y el anfitrion 137358866 es el único con alojamiento en Queens
 
 Si revisamos la distribución de los precios de estos cinco anfitriones, atraves, de un `boxplot`, tenemos que el anfitrion 107434423 tiene el mayor precio promedio y el anfitrion 137358866 tiene todos sus alojamnientos en precios similares y más bajos en comparación con los otros.
 
-```{r, fig.width=10}
+```{r}
+p <- plot_ly(df_host, y = ~price,
+             alpha = 0.1, boxpoints = "suspectedoutliers")
+p1 <- p %>% add_boxplot(x = "Overall")
+p2 <- p %>% add_boxplot(x = ~factor(host_id))
 
-df_host%>%
-  ggplot(aes(x=factor(host_id), y=price)) + 
-  geom_boxplot(fill = "pink")+
-  xlab("Host_Id") + ylab("Precio") +
-  ggtitle("Distribución de precios para los 5 anfitriones con más alojamientos")
-  theme()
+subplot(
+  p1, p2, shareY = TRUE,
+  widths = c(0.2, 0.8), margin = 0
+) %>% hide_legend()
 ```
+El host 107434423 tiene precios por encima de la media del top 5 de anfitriones  mientras que el host 137358866, los tiene por debajo. El host 12243051 tiene los precios más simétricos sin valores atípicos, mientras que el host 219517861 tiene alojamientos variedad de valores encontrando bastantes alojamientos con valores superiores considerados valores atípicos.
+
 ## Análisis de los precios {-}
 
 Si ahora revisamos los precios, vemos que el mayor precio promedio por noche está en la zona de Manhattan para los tres tipos de alojamiento, adicionalmente y  como era de esperarse, es más costoso un alojamiento completo, seguido de una habitación privada y por útimo una habitación compartida, aunque no hay una gran diferencia entre los valores promedios de las habitaciones. Este patrón se mantiene igual, independiente del grupo de vecindario al que pertenezca.
@@ -317,40 +472,52 @@ group_type%>%
   facet_wrap(~neighbourhood_group)+
   xlab("Grupo Vecindario") + ylab("Precio Medio") +
   ggtitle("Precio promedio por grupo de vecindario y tipo de alojamiento")+
-  theme(axis.text.x=element_blank())
+  theme(axis.text.x=element_blank(), legend.title = element_blank()) -> g
+
+ggplotly(g)
 ```
 
+```{r}
+ggplot(data=df_out, mapping = aes(x=neighbourhood_group, y=price)) +
+  geom_boxplot(aes(color = neighbourhood_group))+
+  theme(legend.title = element_blank()) -> g
+
+ggplotly(g)
+```
 El grupo de vecindario con el precio promedio más alto es Manhattan y en este grupo se manejan el mayor rango de precios. Los precios para Queen y Staten Island tienen distribuciones similares.
 
-```{r}
-ggplot(data=df_out, mapping = aes(x=neighbourhood_group, y=price)) +
-  geom_violin()+
-  geom_boxplot(width=0.2)
-```
-
-Si agrupamos por tipo de alojamiento, vemos que los valores por habitaión compartida en Staten Island presentan una distribución distintas a las demás con un rango mayor y un sesgo hacia la izquierda. En cuanto a las habitaciones privadas tenemos una alta concentración de valores atípicos. En los alojamientos completos por grupo el precio es consistente, sin muchos valores atípicos.
+Si agrupamos por tipo de alojamiento, vemos que los valores por habitación compartida en Staten Island presentan un sesgo poitivo. En cuanto a las habitaciones privadas tenemos una alta concentración de valores atípicos. En los alojamientos completos por grupo el precio promedio es menor a 200 y en el caso de Bronx y Staten Island es sesgo es positivo y Manhattan es el que tiene mayor variación de precios en sus alojamientos.
 
 ```{r}
 ggplot(data=df_out, mapping = aes(x=neighbourhood_group, y=price)) +
-  geom_violin()+
-  geom_boxplot(width=0.2)+
-  facet_wrap(~room_type)
+  geom_boxplot(width=0.8, aes(color = neighbourhood_group))+
+  facet_wrap(~room_type)+ 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+ 
+  theme(legend.title = element_blank())+
+  coord_flip()-> g
+
+ggplotly(g)
 ```
 
+## Visualización en mapas {-}
 
-## Visualziación en mapas {-}
-
-Para los datos de interés, contamos con la ubicación (latitud, longitud) de los alojamientos en Nueva York. Revisaremos la distribución de estos en un mapa, através de la función `gg_map`, ubicándonos precisamente en Nueva York, encontrando que la menor cantidad de alojamientos se encuentra en "Staten Island"
+Para los datos de interés, contamos con la ubicación (latitud, longitud) de los alojamientos en Nueva York. Revisaremos la distribución de estos en un mapa, através de la función `gg_map`, ubicándonos precisamente en Nueva York, encontrando que la menor cantidad de alojamientos se encuentra en "Staten Island" y la mayor en "Queens".
 
 ```{r}
+mykey = "AIzaSyCRgNUY6U40KR4MHy0RHKsUxsSRLkE_0i0"
+register_google(key = mykey)
+
 myLocation <- "Nueva York"
 
 myMap <- get_map(location = myLocation, zoom = 10)
 
-ggmap(myMap) + geom_point(data=df_out, aes(x = longitude, y = latitude, colour= neighbourhood_group))
-```
+ggmap(myMap) + 
+  geom_point(data=df_out, aes(x = longitude, y = latitude, colour= neighbourhood_group))+
+  theme(legend.title = element_blank())-> g
 
-En Bronx, hay pocos precios altos en los alojamientos y los que existen se encuebntran a los alrededores de la localidad. Si nos enfocamos en Manhattan, vemos que hay una clara división en los precios, los menores se encuentran al norte y los mayores al sur.
+ggplotly(g)
+```
+En Bronx, hay pocos precios altos en los alojamientos y los que existen se encuentran a los alrededores de la localidad. Si nos enfocamos en Manhattan, vemos que hay una clara división en los precios, los menores se encuentran al norte y los mayores al sur.
 
 En general hay pocos alojamientos con precios altos en comparación con los de precios bajos.
 
@@ -358,10 +525,17 @@ En general hay pocos alojamientos con precios altos en comparación con los de p
 ggmap(myMap) + 
   geom_point(data=df_out, aes(x = longitude, y = latitude, colour= price))+
   scale_color_gradientn(colours = rainbow(5))+
-  facet_wrap(~neighbourhood_group)
+  facet_wrap(~neighbourhood_group) -> g
+
+ggplotly(g)
 ```
 
 
 
 <!--chapter:end:02-EDA.Rmd-->
+
+# Conclusiones
+
+
+<!--chapter:end:03-Conclusiones.Rmd-->
 

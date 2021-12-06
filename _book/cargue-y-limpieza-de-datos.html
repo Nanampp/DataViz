@@ -11,7 +11,7 @@
   <meta property="og:title" content="Chapter 2 Cargue y Limpieza de Datos | Proyecto DataViz" />
   <meta property="og:type" content="book" />
   
-  
+  <meta property="og:image" content="/Images/cover.jfif" />
   <meta property="og:description" content="Ese libro contiene el detalle del proyecto enfocado a sistemas de información geográfica." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
@@ -19,12 +19,12 @@
   <meta name="twitter:title" content="Chapter 2 Cargue y Limpieza de Datos | Proyecto DataViz" />
   
   <meta name="twitter:description" content="Ese libro contiene el detalle del proyecto enfocado a sistemas de información geográfica." />
-  
+  <meta name="twitter:image" content="/Images/cover.jfif" />
 
 <meta name="author" content="Jorge Arteaga y Adriana Palacio" />
 
 
-<meta name="date" content="2021-11-24" />
+<meta name="date" content="2021-12-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,6 +53,13 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
 
 
 <style type="text/css">
@@ -139,7 +146,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Sobre este libro</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#paquetes-necesarios"><i class="fa fa-check"></i><b>1.1</b> Paquetes Necesarios</a></li>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#objetivos"><i class="fa fa-check"></i><b>1.1</b> Objetivos</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#paquetes-necesarios"><i class="fa fa-check"></i><b>1.2</b> Paquetes Necesarios</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="cargue-y-limpieza-de-datos.html"><a href="cargue-y-limpieza-de-datos.html"><i class="fa fa-check"></i><b>2</b> Cargue y Limpieza de Datos</a>
 <ul>
@@ -153,8 +161,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#datos-atípicos"><i class="fa fa-check"></i>Datos Atípicos</a></li>
 <li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#análisis-del-anfitrion"><i class="fa fa-check"></i>Análisis del anfitrion</a></li>
 <li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#análisis-de-los-precios"><i class="fa fa-check"></i>Análisis de los precios</a></li>
-<li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#visualziación-en-mapas"><i class="fa fa-check"></i>Visualziación en mapas</a></li>
+<li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#visualización-en-mapas"><i class="fa fa-check"></i>Visualización en mapas</a></li>
 </ul></li>
+<li class="chapter" data-level="4" data-path="conclusiones.html"><a href="conclusiones.html"><i class="fa fa-check"></i><b>4</b> Conclusiones</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -177,10 +186,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="cargue-y-limpieza-de-datos" class="section level1" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Cargue y Limpieza de Datos</h1>
-<p>En este capítulo abordaremos el cargue de los datos de AIRBNB de la ciudad de Nueva York en el año 2019.</p>
+<p>En este capítulo abordaremos el cargue de los datos de <em>Airbnb</em> de la ciudad de Nueva York en el año 2019.</p>
 <div id="carga-de-datos" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Carga de datos</h2>
-<p>El archivo <code>CSV</code> con el listado de Airbnb de la ciudad de Nueva York para el año 2019 descargado de <em>Kaggle</em> se cargará en una base de datos en <code>Heroku Postgress</code>. Pero para lograr esto, primero debemos cargar como <code>dataframe</code> el archivo a través de la función <code>read.csv()</code>, agregando la isntrucción <code>na = c("", "NA")</code> para tomar los valores vacíos como datos faltantes <code>na</code>.</p>
+<p>El archivo <code>CSV</code> con el listado de Airbnb de la ciudad de Nueva York para el año 2019 descargado de <em>Kaggle</em> se cargará en una base de datos en <code>Heroku Postgress</code>. Pero para lograr esto, primero debemos cargar como <code>dataframe</code> el archivo a través de la función <code>read.csv()</code>, agregando la instrucción <code>na = c("", "NA")</code> para tomar los valores vacíos como datos faltantes <code>na</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="cargue-y-limpieza-de-datos.html#cb2-1" aria-hidden="true" tabindex="-1"></a>airbnb <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file =</span> <span class="st">&quot;Datasets/AB_NYC_2019.csv&quot;</span>, <span class="at">na =</span> <span class="fu">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;NA&quot;</span>))</span>
 <span id="cb2-2"><a href="cargue-y-limpieza-de-datos.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(airbnb)</span></code></pre></div>
 <pre><code>##     id                                             name host_id   host_name
@@ -215,7 +224,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="revisión-de-datos-faltantes" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Revisión de datos faltantes</h2>
-<p>Para determinar la existencia de datos faltantes en el dataframe <em>Airbnb</em>, primero determinaremos por columna cual es su proporción de datos faltantes contando los valores <code>na</code>.</p>
+<p>Para determinar la existencia de datos faltantes en el dataframe <em>Airbnb</em>, primero determinaremos por columna cual es su proporción de valores <code>na</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="cargue-y-limpieza-de-datos.html#cb4-1" aria-hidden="true" tabindex="-1"></a>pMiss <span class="ot">&lt;-</span> <span class="cf">function</span>(x){<span class="fu">sum</span>(<span class="fu">is.na</span>(x))<span class="sc">/</span><span class="fu">length</span>(x)<span class="sc">*</span><span class="dv">100</span>}</span>
 <span id="cb4-2"><a href="cargue-y-limpieza-de-datos.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(airbnb,<span class="dv">2</span>,pMiss)</span></code></pre></div>
 <pre><code>##                             id                           name 
@@ -235,9 +244,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## calculated_host_listings_count               availability_365 
 ##                     0.00000000                     0.00000000</code></pre>
 <p>Tenemos valores faltantes en las colunmnas <code>name</code>, <code>host_name</code>, <code>last_review</code> y <code>reviews_per_month</code>, sin embargo, solo estas dos últimas estan por encima del umbral seguro (5%), lo que podría indicarnos a priori que son variables que deben eliminarse porque no aportarán al análisis. Sin embargo, esta es una decisión que debe tomarse con un mayor análisis de estos registros.</p>
-<p>Haremos uso de la función <code>md.pattern</code> del paquete <code>mice</code>, que nos brinda visualmente el patron de los datos faltantes, para un mejor entendiemiento de estos.</p>
+<p>Haremos uso de la función <code>md.pattern</code> del paquete <code>mice</code>, que nos brinda visualmente el patrón de los datos faltantes, para un mejor entendimiento de estos.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="cargue-y-limpieza-de-datos.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">md.pattern</span>(airbnb, <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">rotate.names=</span><span class="cn">TRUE</span>)</span></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-4-1.png" width="2592" /></p>
 <pre><code>##       id host_id neighbourhood_group neighbourhood latitude longitude room_type
 ## 38821  1       1                   1             1        1         1         1
 ## 10037  1       1                   1             1        1         1         1
@@ -263,7 +272,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 10                   1    0         1           0                 0     3
 ##                      0   16        21       10052             10052 20141</code></pre>
 <p>El patrón nos indica que 38.821 registros no tienen datos faltantes, que los datos faltantes se encuentran en las colunmnas <code>name</code>, <code>host_name</code>, <code>last_review</code> y <code>reviews_per_month</code> (como habíamos encontrado anteriormente), con 16, 21, 10.052 y 10.052 registros, respectivamente. Adicionalmente, el mayor número de registros con datos faltantes (10.037) se encuentran en el patrón que solo contiene <code>na</code> en las columnas <code>last_review</code> y <code>reviews_per_month</code> y solo hay tres filas que contienen más de un valor perdido y de esas solo dos contienen más de dos valores perdidos.</p>
-<p>Haciendo uso del paquete <code>VIM</code>, podemos ver la proporción de datos faltantes graficamente. Por cuestión de espacio y mejor visualización del gráfico, trabajaremos con el dataframe solo con la columnas identificadas anteriormente que tienen datos faltantes</p>
+<p>Haciendo uso del paquete <code>VIM</code>, podemos ver la proporción de datos faltantes gráficamente. Por cuestión de espacio y mejor visualización del gráfico, trabajaremos con el dataframe solo con la columnas identificadas anteriormente que tienen datos faltantes</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="cargue-y-limpieza-de-datos.html#cb8-1" aria-hidden="true" tabindex="-1"></a>airbnb_columns<span class="ot">=</span>airbnb[,<span class="fu">c</span>(<span class="st">&quot;name&quot;</span>,<span class="st">&quot;host_name&quot;</span>,<span class="st">&quot;last_review&quot;</span>,<span class="st">&quot;reviews_per_month&quot;</span>)]</span>
 <span id="cb8-2"><a href="cargue-y-limpieza-de-datos.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">aggr</span>(airbnb_columns, <span class="at">numbers=</span><span class="cn">TRUE</span>, <span class="at">sortVars=</span><span class="cn">TRUE</span>, <span class="at">labels=</span><span class="fu">names</span>(data), <span class="at">cex.axis=</span>.<span class="dv">5</span>, <span class="at">gap=</span><span class="dv">3</span>)</span></code></pre></div>
 <p><img src="_main_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
@@ -274,7 +283,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  reviews_per_month 0.2055833930
 ##          host_name 0.0004294918
 ##               name 0.0003272318</code></pre>
-<p>El gráfico de barras anterior, nos muestra que las columnas <code>last_review</code> y <code>reviews_per_month</code> representan la mayor proporción de datos faltantes y la proporción para la columnas <code>name</code> y <code>host_name</code> no es significativa. Este nuevo patrón nos complemente el anterior obtenido con el paquete <code>mice</code>puesto que nos indica adicionalmente que el 79,4% de los datos no tienen datos perdidos y nos muestra la proporción de filas que tienen un determinado patrón de datos perdidos, por ejemplo, el 20,52% tienen el patron de datos perdidos solo en las columnas en las columnas <code>last_review</code> y <code>reviews_per_month</code>.</p>
+<p>El gráfico de barras anterior, nos muestra que las columnas <code>last_review</code> y <code>reviews_per_month</code> representan la mayor proporción de datos faltantes y la proporción para la columnas <code>name</code> y <code>host_name</code> no es significativa. Este nuevo patrón nos complemente el anterior obtenido con el paquete <code>mice</code>puesto que nos indica adicionalmente que el 79,4% de los datos no tienen datos perdidos y nos muestra la proporción de filas que tienen un determinado patrón de datos perdidos, por ejemplo, el 20,52% tienen el patrón de datos perdidos sólo en las columnas en las columnas <code>last_review</code> y <code>reviews_per_month</code>.</p>
 <p>El número de datos perdidos en el dataframe es bastante significativo (20.6%), sin embargo, al analizar lo que significan las columnas que los tienen, vemos por un lado que para el análisis posterior las columnas <code>name</code> y <code>host_name</code> no son necesarias y pueden elimminarse.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="cargue-y-limpieza-de-datos.html#cb10-1" aria-hidden="true" tabindex="-1"></a>borrar <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;host_name&quot;</span>)</span>
 <span id="cb10-2"><a href="cargue-y-limpieza-de-datos.html#cb10-2" aria-hidden="true" tabindex="-1"></a>airbnb <span class="ot">=</span> airbnb[, <span class="sc">!</span>(<span class="fu">names</span>(airbnb) <span class="sc">%in%</span> borrar)]</span>
@@ -300,7 +309,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 4              4.64                              1              194
 ## 5              0.10                              1                0
 ## 6              0.59                              1              129</code></pre>
-<p>Por otro lado, al analizar los registros faltantes en las columnas <code>last_review</code> y <code>reviews_per_month</code>, encontramos que todos corresponden a aquellos registros donde no existen una evaluación por lo tanto, el manejo de estos datos es simple y se procede de la siguiente manera, se asigna un <code>0</code> en la columna <code>reviews_per_month</code> y se elimina la columna <code>last_review</code> por no tener valor significativo para nuestro análisis posterior.</p>
+<p>Por otro lado, al analizar los registros faltantes en las columnas <code>last_review</code> y <code>reviews_per_month</code>, encontramos que todos corresponden a aquellos donde no existen una evaluación por lo tanto, el manejo de estos datos es simple y se procede de la siguiente manera, se asigna un <code>0</code> en la columna <code>reviews_per_month</code> y se elimina la columna <code>last_review</code> por no tener valor significativo para nuestro análisis posterior.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="cargue-y-limpieza-de-datos.html#cb12-1" aria-hidden="true" tabindex="-1"></a>borrar <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;last_review&quot;</span>)</span>
 <span id="cb12-2"><a href="cargue-y-limpieza-de-datos.html#cb12-2" aria-hidden="true" tabindex="-1"></a>airbnb <span class="ot">=</span> airbnb[, <span class="sc">!</span>(<span class="fu">names</span>(airbnb) <span class="sc">%in%</span> borrar)]</span>
 <span id="cb12-3"><a href="cargue-y-limpieza-de-datos.html#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -355,6 +364,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-6"><a href="cargue-y-limpieza-de-datos.html#cb16-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">password =</span> <span class="st">&quot;916d311356954de6a99118d13578bb9d1b47bdc86cb8360a60b9606293bd882d&quot;</span>)</span></code></pre></div>
 <p>Una vez tengamos establecida la conexión, insertamos los datos en la tabla <code>airbnb</code>, usando la función <code>dbWriteTable()</code></p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="cargue-y-limpieza-de-datos.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbWriteTable</span>(con, <span class="st">&#39;airbnb&#39;</span>, airbnb, <span class="at">row.names=</span><span class="cn">FALSE</span>, <span class="at">overwrite=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="Images/creaciontabla.png" hight="30" /></p>
 <p>Verifiquemos que podamos leer los datos, através de la función <code>dbGetQuery()</code></p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="cargue-y-limpieza-de-datos.html#cb18-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">dbGetQuery</span>(con, <span class="st">&quot;SELECT * FROM airbnb&quot;</span>)</span>
 <span id="cb18-2"><a href="cargue-y-limpieza-de-datos.html#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(df)</span></code></pre></div>
@@ -449,6 +459,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

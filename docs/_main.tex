@@ -117,7 +117,7 @@
 
 \title{Proyecto DataViz}
 \author{Jorge Arteaga y Adriana Palacio}
-\date{2021-11-24}
+\date{2021-12-05}
 
 \begin{document}
 \maketitle
@@ -130,6 +130,12 @@
 \chapter{Sobre este libro}\label{sobre-este-libro}}
 
 Este libro contiene el detalle del proyecto enfocado a sistemas de información geográfica. Se estará trabajando con un archivo tomado de \emph{Kaggle} en \url{https://www.kaggle.com/dgomonov/data-exploration-on-nyc-airbnb} que contiene información resumida y métricas para Airbnb en la ciudad de Nueva York en 2019.
+
+\hypertarget{objetivos}{%
+\section{Objetivos}\label{objetivos}}
+
+a donde se desea llegar con todo el análisis presentado
+en la entrega final les pido el favor que agreguen imágenes a los books, como por ejemplo logo de la universidad, así como también cualquier imagen relacionada con el proyecto, que hagan visualmente más atractiva la portada del book.
 
 \hypertarget{paquetes-necesarios}{%
 \section{Paquetes Necesarios}\label{paquetes-necesarios}}
@@ -950,14 +956,17 @@ Si agrupamos por tipo de alojamiento, vemos que los valores por habitaión compa
 
 \includegraphics{_main_files/figure-latex/unnamed-chunk-26-1.pdf}
 
-\hypertarget{visualziaciuxf3n-en-mapas}{%
-\section*{Visualziación en mapas}\label{visualziaciuxf3n-en-mapas}}
-\addcontentsline{toc}{section}{Visualziación en mapas}
+\hypertarget{visualizaciuxf3n-en-mapas}{%
+\section*{Visualización en mapas}\label{visualizaciuxf3n-en-mapas}}
+\addcontentsline{toc}{section}{Visualización en mapas}
 
 Para los datos de interés, contamos con la ubicación (latitud, longitud) de los alojamientos en Nueva York. Revisaremos la distribución de estos en un mapa, através de la función \texttt{gg\_map}, ubicándonos precisamente en Nueva York, encontrando que la menor cantidad de alojamientos se encuentra en ``Staten Island''
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\NormalTok{mykey }\OtherTok{=} \StringTok{"AIzaSyCRgNUY6U40KR4MHy0RHKsUxsSRLkE\_0i0"}
+\FunctionTok{register\_google}\NormalTok{(}\AttributeTok{key =}\NormalTok{ mykey)}
+
 \NormalTok{myLocation }\OtherTok{\textless{}{-}} \StringTok{"Nueva York"}
 
 \NormalTok{myMap }\OtherTok{\textless{}{-}} \FunctionTok{get\_map}\NormalTok{(}\AttributeTok{location =}\NormalTok{ myLocation, }\AttributeTok{zoom =} \DecValTok{10}\NormalTok{)}
