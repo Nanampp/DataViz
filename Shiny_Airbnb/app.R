@@ -154,7 +154,7 @@ server <- function(input, output, ...) {
         scale_color_gradientn(colours = rainbow(5))+
         facet_wrap(~neighbourhood_group)+
         ggtitle("Precios por grupo de vecindario")-> g2
-        ggplotly(g2)
+        ggplotly(g2,height = 600, width=1024)
     })
     
     current_neighbourhood_group <- reactiveVal()
