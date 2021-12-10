@@ -41,7 +41,7 @@ aggr(airbnb_columns, numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.
 
 El gráfico de barras anterior, nos muestra que las columnas `last_review` y `reviews_per_month` representan la mayor proporción de datos faltantes y la proporción para la columnas `name` y `host_name` no es significativa. Este nuevo patrón nos complemente el anterior obtenido con el paquete `mice`puesto que nos indica adicionalmente que el 79,4% de los datos no tienen datos perdidos y nos muestra la proporción de filas que tienen un determinado patrón de datos perdidos, por ejemplo, el 20,52% tienen el patrón de datos perdidos sólo en las columnas en las columnas `last_review` y `reviews_per_month`.
 
-El número de datos perdidos en el dataframe es bastante significativo (20.6%), sin embargo, al analizar lo que significan las columnas que los tienen, vemos por un lado que para el análisis posterior las columnas `name` y `host_name` no son necesarias y pueden elimminarse.
+El número de datos perdidos en el dataframe es bastante significativo (20.6%), sin embargo, al analizar lo que significan las columnas que los tienen, vemos por un lado que para el análisis posterior las columnas `name` y `host_name` no son necesarias y pueden eliminarse.
 
 ```{r}
 borrar = c("name", "host_name")

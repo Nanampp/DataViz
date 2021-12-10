@@ -174,7 +174,7 @@ Volvemos a extraer las estadísticas de resumen:
 summary(df_out)
 ```
 
-Con estos cambios en nuestro dataframe, podemos ver que los precios ahora oscilan entre 0 y 573 dólares y las noches mínimas no superan las 47 (mes y medio), lo cual tiene mayo sentido para nuestro análisis.
+Con estos cambios en nuestro dataframe, podemos ver que los precios ahora oscilan entre 0 y 573 dólares y las noches mínimas no superan las 47 (mes y medio), lo cual tiene mayor sentido para nuestro análisis.
 
 ## Análisis del anfitrion {-}
 
