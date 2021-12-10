@@ -24,7 +24,7 @@
 <meta name="author" content="Jorge Arteaga y Adriana Palacio" />
 
 
-<meta name="date" content="2021-12-05" />
+<meta name="date" content="2021-12-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -161,9 +161,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#datos-atípicos"><i class="fa fa-check"></i>Datos Atípicos</a></li>
 <li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#análisis-del-anfitrion"><i class="fa fa-check"></i>Análisis del anfitrion</a></li>
 <li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#análisis-de-los-precios"><i class="fa fa-check"></i>Análisis de los precios</a></li>
-<li class="chapter" data-level="" data-path="análisis-exploratorio-de-los-datos.html"><a href="análisis-exploratorio-de-los-datos.html#visualización-en-mapas"><i class="fa fa-check"></i>Visualización en mapas</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="conclusiones.html"><a href="conclusiones.html"><i class="fa fa-check"></i><b>4</b> Conclusiones</a></li>
+<li class="chapter" data-level="4" data-path="visualización-en-mapas.html"><a href="visualización-en-mapas.html"><i class="fa fa-check"></i><b>4</b> Visualización en mapas</a></li>
+<li class="chapter" data-level="5" data-path="aplicación-con-shiny.html"><a href="aplicación-con-shiny.html"><i class="fa fa-check"></i><b>5</b> Aplicación con Shiny</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="aplicación-con-shiny.html"><a href="aplicación-con-shiny.html#host"><i class="fa fa-check"></i><b>5.1</b> Host</a></li>
+<li class="chapter" data-level="5.2" data-path="aplicación-con-shiny.html"><a href="aplicación-con-shiny.html#grupo-vecindario"><i class="fa fa-check"></i><b>5.2</b> Grupo Vecindario</a></li>
+<li class="chapter" data-level="5.3" data-path="aplicación-con-shiny.html"><a href="aplicación-con-shiny.html#participación"><i class="fa fa-check"></i><b>5.3</b> Participación</a></li>
+<li class="chapter" data-level="5.4" data-path="aplicación-con-shiny.html"><a href="aplicación-con-shiny.html#mapas"><i class="fa fa-check"></i><b>5.4</b> Mapas</a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -187,7 +193,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Proyecto DataViz</h1>
 <p class="author"><em>Jorge Arteaga y Adriana Palacio</em></p>
-<p class="date"><em>2021-12-05</em></p>
+<p class="date"><em>2021-12-10</em></p>
 </div>
 <div id="sobre-este-libro" class="section level1" number="1">
 <h1><span class="header-section-number">Chapter 1</span> Sobre este libro</h1>
@@ -196,34 +202,40 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">1.1</span> Objetivos</h2>
 <p>Este documento pretente encontrar como están distribuidos los precios de los airbnb en Nueva York. Haciendo un análisis por anfitrión, por tipo de alojamiento y por grupo de vecindario. Para lograr esto, realizaremos:</p>
 <ul>
-<li>Un análisis preliminar de los datos</li>
+<li>Un análisis preliminar de los datos.</li>
 <li>Un análisis de datos faltantes y atípicos que puedan entorpecer las conclusiones.</li>
 <li>Un análisis por distribución geográfica.</li>
 </ul>
+<p>Con estos resultados se construirá una aplicación en <code>Shiny</code>.</p>
 </div>
 <div id="paquetes-necesarios" class="section level2" number="1.2">
 <h2><span class="header-section-number">1.2</span> Paquetes Necesarios</h2>
 <p>Para poder trabajar con estos datos se hace necesario cargar una serie de librerías.</p>
 <ol style="list-style-type: decimal">
-<li>Para el cargue delarchivo csv, utilizaremos el paquete <code>readr</code>.</li>
-<li>Para el manejo de dataframe, utilziaremos el paquete <code>dplyr</code>.</li>
+<li>Para el cargue del archivo csv, utilizaremos el paquete <code>readr</code>.</li>
+<li>Para el manejo de dataframe, utilizaremos el paquete <code>dplyr</code>.</li>
 <li>Para revisión de datos faltantes, utilizaremos los paquetes <code>mice</code> y <code>VIM</code>.</li>
 <li>Para conexión a la base de datos PostgreSQL, utilizaremos el paquete <code>RPostgresL</code>.</li>
-<li>Para poder hacer uso de la API y realizar la conexión a la base de datos con éxito, utilizaremos el paquete <code>DBI</code></li>
-<li>Para graficar, utilizararemos el paquete <code>ggplot2</code></li>
-<li>Para visualización en mapas, utilizaremos el paquete <code>ggmap</code></li>
+<li>Para poder hacer uso de la API y realizar la conexión a la base de datos con éxito, utilizaremos el paquete <code>DBI</code>.</li>
+<li>Para poder identificar datos atípicos, utilizaremos los paquetes <code>outliers</code> y <code>EnvStats</code>.
+7 Para graficar, utilizararemos el paquete <code>ggplot2</code>.</li>
+<li>Para generar gráficos dinámicos, utilizaremos el paquete <code>plotly</code>.</li>
+<li>Para visualización en mapas, utilizaremos el paquete <code>ggmap</code>.</li>
+<li>Para la construcción de la aplicación, utilizaremos los paquetes <code>shiny</code> y <code>shinythemes</code>.</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="index.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
 <span id="cb1-2"><a href="index.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-3"><a href="index.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)</span>
 <span id="cb1-4"><a href="index.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(VIM)</span>
-<span id="cb1-5"><a href="index.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
-<span id="cb1-6"><a href="index.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RPostgres)</span>
-<span id="cb1-7"><a href="index.html#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-8"><a href="index.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmap)</span>
-<span id="cb1-9"><a href="index.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
-<span id="cb1-10"><a href="index.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(outliers)</span>
-<span id="cb1-11"><a href="index.html#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnvStats)</span></code></pre></div>
+<span id="cb1-5"><a href="index.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RPostgres)</span>
+<span id="cb1-6"><a href="index.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb1-7"><a href="index.html#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(outliers)</span>
+<span id="cb1-8"><a href="index.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnvStats)</span>
+<span id="cb1-9"><a href="index.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-10"><a href="index.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb1-11"><a href="index.html#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmap)</span>
+<span id="cb1-12"><a href="index.html#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb1-13"><a href="index.html#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shinythemes)</span></code></pre></div>
 
 </div>
 </div>

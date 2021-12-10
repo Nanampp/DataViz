@@ -22,17 +22,17 @@ Para determinar la existencia de datos faltantes en el dataframe *Airbnb*, prime
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
 apply(airbnb,2,pMiss)
 ```
-Tenemos valores faltantes en las colunmnas `name`, `host_name`, `last_review` y `reviews_per_month`, sin embargo, solo estas dos últimas estan por encima del umbral seguro (5%), lo que podría indicarnos a priori que son variables que deben eliminarse porque no aportarán al análisis. Sin embargo, esta es una decisión que debe tomarse con un mayor análisis de estos registros.
+Tenemos valores faltantes en las colunmnas `name`, `host_name`, `last_review` y `reviews_per_month`, sin embargo, solo estas dos últimas están por encima del umbral seguro (5%), lo que podría indicarnos a priori que son variables que deben eliminarse porque no aportarán al análisis. Sin embargo, esta es una decisión que debe tomarse con un mayor análisis de estos registros.
 
 Haremos uso de la función `md.pattern` del paquete `mice`, que nos brinda visualmente el patrón de los datos faltantes, para un mejor entendimiento de estos. 
 
-```{r fig.width=27, fig.height=10}
+```{r  fig.height=9}
 md.pattern(airbnb, plot = TRUE, rotate.names=TRUE)
 ```
 
 El patrón nos indica que 38.821 registros no tienen datos faltantes, que los datos faltantes se encuentran en las colunmnas `name`, `host_name`, `last_review` y `reviews_per_month` (como habíamos encontrado anteriormente), con 16, 21, 10.052 y 10.052 registros, respectivamente. Adicionalmente, el mayor número de registros con datos faltantes (10.037) se encuentran en el patrón que solo contiene `na` en las columnas `last_review` y `reviews_per_month` y solo hay tres filas que contienen más de un valor perdido y de esas solo dos contienen más de dos valores perdidos.
 
-Haciendo uso del paquete `VIM`, podemos ver la proporción de datos faltantes gráficamente. Por cuestión de espacio y mejor visualización del gráfico, trabajaremos con el dataframe solo con la columnas identificadas anteriormente que tienen datos faltantes
+Haciendo uso del paquete `VIM`, podemos ver la proporción de datos faltantes gráficamente. Por cuestión de espacio y mejor visualización del gráfico, trabajaremos solo con la columnas identificadas anteriormente que tienen datos faltantes.
 
 ```{r  fig.width=10}
 airbnb_columns=airbnb[,c("name","host_name","last_review","reviews_per_month")]

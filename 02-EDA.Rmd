@@ -1,6 +1,6 @@
 # Análisis Exploratorio de los datos
 
-En este capítulo abordaremos el análisis exploratorio de los dato *EDA* para el listado de Airbnb de la ciudad de Nueva York en el año 2019.
+En este capítulo abordaremos el análisis exploratorio de los datos *"EDA"* para el listado de Airbnb de la ciudad de Nueva York en el año 2019.
 
 ## Resumen de los datos {-}
 
@@ -19,7 +19,7 @@ summary(df)
 
 De las columnas de nuestro dataframe, podemos decir por ejemplo que el precio de una noche de los airbnb oscila entre 0 y 10.000 dólares con un promedio de 152.7 dólares, más adelante revisaremos si un precio diario de 10.000 dólares es o no un dato atípico. Adicionalmente, los alojamientos se pueden reservar desde una (1) noche, sin embargo hay algunos cuyas noches mínimas son de 1.250, alrededor de 3.5 años, esto también es un candidato a dato atípico que será revisado en la siguente sección. Por otro lado, existen anfitriones que tienen hasta 327 alojamientos en la región.
 
-A pesar, que las columnas `id`, `host_id`, `latitude` y `longitude` son numéricas, no son relevante las métricas de minimo, máximo, media y cuartiles.
+A pesar, que las columnas `id`, `host_id`, `latitude` y `longitude` son numéricas, no son relevantes las métricas de mínimo, máximo, media y cuartiles.
 
 Evaluando los valores que pueden tomar las variables categóricas usando la función `unique`, encontramos que los tipos de alojamiento disponibles son: Habitaciones privadas ("Private room"), Apartamentos Completos  ("Entire home/apt") o Habitaciones compartidas ("Shared room") y tenemos grupos de vencindarios como Brooklyn, Manhattan, Qeens, Staten Island y Bronx y en total 221 vecindarios disponibles para alojamiento.
 
@@ -33,7 +33,7 @@ length(unique(df$neighbourhood))
 
 Tenemos sospechas que existen datos atípicos en las columnas `price` y `minimum_nights`. Al analizar los histogramas y boxplots encontramos que estos abarcan la mayor parte del rango de las variables.
 
-```{r}
+```{r warning=FALSE}
 par(mfrow = c(1, 2))
 
 g1 = ggplot(df) +
@@ -147,12 +147,12 @@ Esta prueba debe recibir además del dataset, el número de presuntos valores at
 ```{r}
 nrow(df[df$price>500, ])
 test <- rosnerTest(df$price, k = 1044)
-head(test$all.stats,1000)
+test$all.stats[920:930, ]
 ```
 ```{r}
 nrow(df[df$minimum_nights>30, ])
 test <- rosnerTest(df$minimum_nights, k = 747)
-head(test$all.stats,1000)
+test$all.stats[460:470, ]
 ```
 El test de Rosner nos indica que son valores atípicos, precios a partir de 575 dólares y noches mínimas a partir de 50. Usando este criterio, eliminamos el 2.8% de nuestros datos, resultando un dataframe con 1370 registros menos.
 
@@ -161,94 +161,26 @@ nrow(df)
 nrow(df[df$price>=575 | df$minimum_nights>=50 , ])
 nrow(df[df$price>=575 | df$minimum_nights>=50 , ])/nrow(df)*100.00
 ```
-Una vez eliminados estos datos atípicos, volvemos a extraer las estadísticas de resumen:
+Una vez eliminados estos datos atípicos, reemplazamos los registros de la tabla `airbnb` creada nuevamente con estos sin datos atípicos, usando la función `dbWriteTable()`
 
 ```{r}
 df_out = df[df$price<575 & df$minimum_nights<50, ]
+dbWriteTable(con, 'airbnb', df_out, row.names=FALSE, overwrite=TRUE)
+```
+
+Volvemos a extraer las estadísticas de resumen:
+
+```{r}
 summary(df_out)
 ```
 
-
-```{r}
-g1 = ggplot(df_out) +
-  aes(x = price) +
-  geom_histogram(fill = "pink") +
-  theme_minimal()
-
-
-g2 = ggplot(df_out) +
-  aes(x = minimum_nights) +
-  geom_histogram(fill = "orange") +
-  theme_minimal()
-
-
-g3 = ggplot(df_out) +
-  aes(x = "", y = price) +
-  geom_boxplot(fill = "pink") +
-  theme_minimal()
-
-
-g4 = ggplot(df_out) +
-  aes(x = "", y = minimum_nights) +
-  geom_boxplot(fill = "orange") +
-  theme_minimal()
-
-
-fig = subplot(g1, g3,g2,g4, nrows = 2, shareX = FALSE)
-
-annotations = list( 
-  list( 
-    x = 0.2,  
-    y = 1.0,  
-    text = "Price",  
-    xref = "paper",  
-    yref = "paper",  
-    xanchor = "center",  
-    yanchor = "bottom",  
-    showarrow = FALSE 
-  ),  
-  list( 
-    x = 0.8,  
-    y = 1,  
-    text = "",  
-    xref = "paper",  
-    yref = "paper",  
-    xanchor = "center",  
-    yanchor = "bottom",  
-    showarrow = FALSE 
-  ),  
-  list( 
-    x = 0.2,  
-    y = 0.43,  
-    text = "Minimum_nights",  
-    xref = "paper",  
-    yref = "paper",  
-    xanchor = "center",  
-    yanchor = "bottom",  
-    showarrow = FALSE 
-  ),
-  list( 
-    x = 0.8,  
-    y = 0.45,  
-    text = "",  
-    xref = "paper",  
-    yref = "paper",  
-    xanchor = "center",  
-    yanchor = "bottom",  
-    showarrow = FALSE 
-  ))
-
-fig <- fig %>%layout(annotations = annotations) 
-#options(warn = -1)
-fig
-
-```
+Con estos cambios en nuestro dataframe, podemos ver que los precios ahora oscilan entre 0 y 573 dólares y las noches mínimas no superan las 47 (mes y medio), lo cual tiene mayo sentido para nuestro análisis.
 
 ## Análisis del anfitrion {-}
 
-A través de la función de agrupación `group_by`, podemos obtener los anfitriones con más alojamientos disponibles, encontrando que el mayor tiene 317 lo que no es consistente con el máximo valor encontrado en la columna `calculated_host_listings_count` (327) debido a la eliminación de datos atípicos realizados anteriormente, es por esto, que esta columna, se eliminará del dataframe.
+A través de la función de agrupación `group_by`, podemos obtener los anfitriones con más alojamientos disponibles. Hemos encontrando que el anfitrión con mayor número de alojamientos tiene 317 lo que no es consistente con la columna `calculated_host_listings_count` (327) y esto se debe a que hemos eliminado datos del dataframe original una vez identificados los valores atípicos, es por esto, que esta columna, se eliminará.
 
-```{r}
+```{r warning=FALSE}
 df_out %>%
   group_by(host_id) %>%
   summarise(n = n()) %>%
@@ -268,7 +200,7 @@ df_out = df_out[, !(names(df_out) %in% borrar)]
 
 Ahora, revisemos la distribución de alojamientos por grupos de vecindarios.
 
-```{r, fig.width=10}
+```{r fig.width=10, warning=FALSE}
 
 df_host = filter(df_out, host_id %in% top_hostid$host_id)
 
@@ -305,7 +237,7 @@ El host 107434423 tiene precios por encima de la media del top 5 de anfitriones 
 
 Si ahora revisamos los precios, vemos que el mayor precio promedio por noche está en la zona de Manhattan para los tres tipos de alojamiento, adicionalmente y  como era de esperarse, es más costoso un alojamiento completo, seguido de una habitación privada y por útimo una habitación compartida, aunque no hay una gran diferencia entre los valores promedios de las habitaciones. Este patrón se mantiene igual, independiente del grupo de vecindario al que pertenezca.
 
-```{r}
+```{r warning=FALSE}
 df_out %>%
   group_by(neighbourhood_group, room_type)%>%
   summarise(m = mean(price)) -> group_type
@@ -314,9 +246,10 @@ group_type%>%
   ggplot(aes(x=room_type, y=m, fill=room_type)) + 
   geom_bar(stat="identity")+
   facet_wrap(~neighbourhood_group)+
-  xlab("Grupo Vecindario") + ylab("Precio Medio") +
+  xlab("Grupo Vecindario") + ylab("Precio Medio") + 
   ggtitle("Precio promedio por grupo de vecindario y tipo de alojamiento")+
-  theme(axis.text.x=element_blank(), legend.title = element_blank()) -> g
+  theme(axis.text.y = element_text(angle = 90))+ 
+  theme(axis.text.x=element_blank(), legend.title = element_blank())-> g
 
 ggplotly(g)
 ```
@@ -328,48 +261,17 @@ ggplot(data=df_out, mapping = aes(x=neighbourhood_group, y=price)) +
 
 ggplotly(g)
 ```
+
 El grupo de vecindario con el precio promedio más alto es Manhattan y en este grupo se manejan el mayor rango de precios. Los precios para Queen y Staten Island tienen distribuciones similares.
 
-Si agrupamos por tipo de alojamiento, vemos que los valores por habitación compartida en Staten Island presentan un sesgo poitivo. En cuanto a las habitaciones privadas tenemos una alta concentración de valores atípicos. En los alojamientos completos por grupo el precio promedio es menor a 200 y en el caso de Bronx y Staten Island es sesgo es positivo y Manhattan es el que tiene mayor variación de precios en sus alojamientos.
+Si agrupamos por tipo de alojamiento, vemos que los valores por habitación compartida en Staten Island presentan un sesgo positivo. En cuanto a las habitaciones privadas tenemos una alta concentración de valores atípicos. En los alojamientos completos por grupo el precio promedio es menor a 200 y en el caso de Bronx y Staten Island es sesgo es positivo y Manhattan es el que tiene mayor variación de precios en sus alojamientos.
 
 ```{r}
 ggplot(data=df_out, mapping = aes(x=neighbourhood_group, y=price)) +
   geom_boxplot(width=0.8, aes(color = neighbourhood_group))+
   facet_wrap(~room_type)+ 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+ 
-  theme(legend.title = element_blank())+
+  theme(legend.title = element_blank(), axis.text.y=element_blank())+
   coord_flip()-> g
-
-ggplotly(g)
-```
-
-## Visualización en mapas {-}
-
-Para los datos de interés, contamos con la ubicación (latitud, longitud) de los alojamientos en Nueva York. Revisaremos la distribución de estos en un mapa, através de la función `gg_map`, ubicándonos precisamente en Nueva York, encontrando que la menor cantidad de alojamientos se encuentra en "Staten Island" y la mayor en "Queens".
-
-```{r}
-mykey = "AIzaSyCRgNUY6U40KR4MHy0RHKsUxsSRLkE_0i0"
-register_google(key = mykey)
-
-myLocation <- "Nueva York"
-
-myMap <- get_map(location = myLocation, zoom = 10)
-
-ggmap(myMap) + 
-  geom_point(data=df_out, aes(x = longitude, y = latitude, colour= neighbourhood_group))+
-  theme(legend.title = element_blank())-> g
-
-ggplotly(g)
-```
-En Bronx, hay pocos precios altos en los alojamientos y los que existen se encuentran a los alrededores de la localidad. Si nos enfocamos en Manhattan, vemos que hay una clara división en los precios, los menores se encuentran al norte y los mayores al sur.
-
-En general hay pocos alojamientos con precios altos en comparación con los de precios bajos.
-
-```{r}
-ggmap(myMap) + 
-  geom_point(data=df_out, aes(x = longitude, y = latitude, colour= price))+
-  scale_color_gradientn(colours = rainbow(5))+
-  facet_wrap(~neighbourhood_group) -> g
 
 ggplotly(g)
 ```

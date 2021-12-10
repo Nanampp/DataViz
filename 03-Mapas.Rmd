@@ -1,0 +1,39 @@
+# Visualización en mapas
+
+Para los datos de interés, contamos con la ubicación (latitud, longitud) de los alojamientos en Nueva York. Revisaremos la distribución de estos en un mapa, através de la función `gg_map`, ubicándonos precisamente en Nueva York, encontrando que la menor cantidad de alojamientos se encuentra en "Staten Island" y la mayor en "Queens".
+
+```{r}
+con <- dbConnect(RPostgres::Postgres(), 
+                dbname = "d41lsl8qgestjf", 
+                host = "ec2-3-229-43-149.compute-1.amazonaws.com", 
+                port = 5432, 
+                user = "uqtxfaqjjcxggw", 
+                password = "916d311356954de6a99118d13578bb9d1b47bdc86cb8360a60b9606293bd882d")
+
+df_out = dbGetQuery(con, "SELECT * FROM airbnb")
+
+mykey = "AIzaSyCRgNUY6U40KR4MHy0RHKsUxsSRLkE_0i0"
+register_google(key = mykey)
+
+myLocation <- "Nueva York"
+
+myMap <- get_map(location = myLocation, zoom = 10)
+
+ggmap(myMap) + 
+  geom_point(data=df_out, aes(x = longitude, y = latitude, colour= neighbourhood_group))+
+  theme(legend.title = element_blank())-> g
+
+ggplotly(g)
+```
+
+En Bronx, hay pocos precios altos en los alojamientos y los que existen se encuentran a los alrededores de la localidad. Si nos enfocamos en Manhattan, vemos que hay una clara división en los precios, los menores se encuentran al norte y los mayores al sur. Y en general hay pocos alojamientos con precios altos en comparación con los de precios bajos.
+
+```{r}
+ggmap(myMap) + 
+  geom_point(data=df_out, aes(x = longitude, y = latitude, colour= price))+
+  scale_color_gradientn(colours = rainbow(5))+
+  facet_wrap(~neighbourhood_group, nrow = 2) -> g
+
+ggplotly(g)
+```
+
